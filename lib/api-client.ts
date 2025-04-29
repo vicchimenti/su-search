@@ -6,14 +6,14 @@
  * to preserve original client IPs.
  *
  * @author Victor Chimenti
- * @version 2.0.2
- * @lastModified 2025-04-28
+ * @version 2.0.3
+ * @lastModified 2025-04-29
  */
 
 import axios, { AxiosInstance, AxiosRequestConfig, AxiosRequestHeaders } from 'axios';
 
 // Get backend API URL from environment variables, with fallback
-const BACKEND_API_URL = process.env.BACKEND_API_URL || 'https://funnelback-proxy-dev.vercel.app/proxy';
+const BACKEND_API_URL = process.env.BACKEND_API_URL || 'https://funnelback-proxy-one.vercel.app/proxy';
 
 // Flag to determine if we're in a server context
 const isServer = typeof window === 'undefined';

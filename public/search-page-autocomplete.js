@@ -7,8 +7,8 @@
  *
  * @license MIT
  * @author Victor Chimenti
- * @version 2.1.0
- * @lastModified 2025-04-28
+ * @version 2.1.1
+ * @lastModified 2025-04-29
  */
 
 // Create a module-level session handler that serves as the single source of truth within this file
@@ -83,122 +83,107 @@ function renderResultsPageSuggestions(data, container, query) {
   let html = `
     <div class="suggestions-list">
       <div class="suggestions-columns">
-        ${
-          general.length > 0
-            ? `
+        ${general.length > 0
+      ? `
           <div class="suggestions-column">
             <div class="column-header">Suggestions</div>
             ${general
-              .map((suggestion, index) => {
-                const display = suggestion.display || suggestion;
-                return `
+        .map((suggestion, index) => {
+          const display = suggestion.display || suggestion;
+          return `
                 <div class="suggestion-item" role="option" data-index="${index}" data-type="general">
                   <span class="suggestion-text">${display}</span>
                 </div>
               `;
-              })
-              .join("")}
+        })
+        .join("")}
           </div>
         `
-            : ""
-        }
+      : ""
+    }
         
-        ${
-          staff.length > 0
-            ? `
+        ${staff.length > 0
+      ? `
           <div class="suggestions-column">
             <div class="column-header">Faculty & Staff</div>
             ${staff
-              .map(
-                (person, index) => `
-              <div class="suggestion-item staff-item" role="option" data-index="${index}" data-type="staff" data-url="${
-                  person.url || "#"
-                }">
-                <a href="${
-                  person.url || "#"
-                }" class="staff-link" target="_blank" rel="noopener noreferrer">
+        .map(
+          (person, index) => `
+              <div class="suggestion-item staff-item" role="option" data-index="${index}" data-type="staff" data-url="${person.url || "#"
+            }">
+                <a href="${person.url || "#"
+            }" class="staff-link" target="_blank" rel="noopener noreferrer">
                   <div class="staff-suggestion">
-                    ${
-                      person.image
-                        ? `
+                    ${person.image
+              ? `
                       <div class="staff-image">
-                        <img src="${person.image}" alt="${
-                            person.title || ""
-                          }" class="staff-thumbnail" loading="lazy">
+                        <img src="${person.image}" alt="${person.title || ""
+              }" class="staff-thumbnail" loading="lazy">
                       </div>
                     `
-                        : ""
-                    }
+              : ""
+            }
                     <div class="staff-info">
                       <span class="suggestion-text">${person.title || ""}</span>
-                      ${
-                        person.position
-                          ? `<span class="staff-role">${person.position}</span>`
-                          : ""
-                      }
-                      ${
-                        person.affiliation
-                          ? `<span class="staff-role">${person.affiliation}</span>`
-                          : ""
-                      }
-                      ${
-                        person.department
-                          ? `<span class="staff-department">${person.department}</span>`
-                          : ""
-                      }
-                      ${
-                        person.college
-                          ? `<span class="staff-department">${person.college}</span>`
-                          : ""
-                      }
+                      ${person.position
+              ? `<span class="staff-role">${person.position}</span>`
+              : ""
+            }
+                      ${person.affiliation
+              ? `<span class="staff-role">${person.affiliation}</span>`
+              : ""
+            }
+                      ${person.department
+              ? `<span class="staff-department">${person.department}</span>`
+              : ""
+            }
+                      ${person.college
+              ? `<span class="staff-department">${person.college}</span>`
+              : ""
+            }
                     </div>
                   </div>
                 </a>
               </div>
             `
-              )
-              .join("")}
+        )
+        .join("")}
           </div>
         `
-            : ""
-        }
+      : ""
+    }
         
-        ${
-          programResults.length > 0
-            ? `
+        ${programResults.length > 0
+      ? `
           <div class="suggestions-column">
             <div class="column-header">Programs</div>
             ${programResults
-              .map(
-                (program, index) => `
-              <div class="suggestion-item program-item" role="option" data-index="${index}" data-type="program" data-url="${
-                  program.url || "#"
-                }">
-                <a href="${
-                  program.url || "#"
-                }" class="program-link" target="_blank" rel="noopener noreferrer">
+        .map(
+          (program, index) => `
+              <div class="suggestion-item program-item" role="option" data-index="${index}" data-type="program" data-url="${program.url || "#"
+            }">
+                <a href="${program.url || "#"
+            }" class="program-link" target="_blank" rel="noopener noreferrer">
                   <div class="program-suggestion">
                     <span class="suggestion-text">${program.title || ""}</span>
-                    ${
-                      program.details?.school
-                        ? `<span class="suggestion-type">${program.details.school}</span>`
-                        : ""
-                    }
-                    ${
-                      program.description
-                        ? `<span class="program-description">${program.description}</span>`
-                        : ""
-                    }
+                    ${program.details?.school
+              ? `<span class="suggestion-type">${program.details.school}</span>`
+              : ""
+            }
+                    ${program.description
+              ? `<span class="program-description">${program.description}</span>`
+              : ""
+            }
                   </div>
                 </a>
               </div>
             `
-              )
-              .join("")}
+        )
+        .join("")}
           </div>
         `
-            : ""
-        }
+      : ""
+    }
       </div>
     </div>
   `;
@@ -304,7 +289,7 @@ function trackSuggestionClick(text, type, url, title) {
     // Get the API endpoint from global config or use default
     const apiBaseUrl =
       window.seattleUConfig?.search?.proxyBaseUrl ||
-      "https://funnelback-proxy-dev.vercel.app/proxy";
+      "https://funnelback-proxy-one.vercel.app/proxy";
     const endpoint = `${apiBaseUrl}/analytics/click`;
 
     // Use sendBeacon if available for non-blocking operation
@@ -338,7 +323,7 @@ async function fetchSuggestions(query, container, isResultsPage = true) {
     // Get API URL from global config or use default
     const apiBaseUrl =
       window.seattleUConfig?.search?.apiBaseUrl ||
-      "https://su-search-dev.vercel.app";
+      "https://su-search.vercel.app";
 
     // Prepare URL with parameters
     const params = new URLSearchParams({ query });
@@ -377,7 +362,7 @@ async function performSearch(query, container) {
     // Get API URL from global config or use default
     const apiBaseUrl =
       window.seattleUConfig?.search?.apiBaseUrl ||
-      "https://su-search-dev.vercel.app";
+      "https://su-search.vercel.app";
     const collection =
       window.seattleUConfig?.search?.collection || "seattleu~sp-search";
     const profile = window.seattleUConfig?.search?.profile || "_default";
@@ -445,7 +430,7 @@ function isElementInViewport(el) {
     rect.top >= 0 &&
     rect.left >= 0 &&
     rect.bottom <=
-      (window.innerHeight || document.documentElement.clientHeight) &&
+    (window.innerHeight || document.documentElement.clientHeight) &&
     rect.right <= (window.innerWidth || document.documentElement.clientWidth)
   );
 }
@@ -496,7 +481,7 @@ function trackResultClick(query, url, title, position) {
     // Get API endpoint from global config or use default
     const apiBaseUrl =
       window.seattleUConfig?.search?.proxyBaseUrl ||
-      "https://funnelback-proxy-dev.vercel.app/proxy";
+      "https://funnelback-proxy-one.vercel.app/proxy";
     const endpoint = `${apiBaseUrl}/analytics/click`;
 
     // Use sendBeacon if available for non-blocking operation

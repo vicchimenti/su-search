@@ -5,15 +5,15 @@
  * the search system into the Seattle University CMS.
  *
  * @author Victor Chimenti
- * @version 2.0.0
- * @lastModified 2025-04-10
+ * @version 2.0.1
+ * @lastModified 2025-04-29
  */
 
 (function () {
   // Configuration with defaults
   const config = window.seattleUConfig?.search || {
-    apiBaseUrl: 'https://frontend-search-api.vercel.app',
-    proxyBaseUrl: 'https://funnelback-proxy-dev.vercel.app/proxy',
+    apiBaseUrl: 'https://su-search.vercel.app',
+    proxyBaseUrl: 'https://funnelback-proxy-one.vercel.app/proxy',
     collection: 'seattleu~sp-search',
     profile: '_default'
   };
@@ -582,17 +582,17 @@
   }
 
   // Make track functions available globally for other components
-  window.trackSuggestionClick = function(text, type, url, title) {
+  window.trackSuggestionClick = function (text, type, url, title) {
     const sessionId = getSessionId();
     trackSuggestionClick(text, type, url, title, sessionId);
   };
 
-  window.trackResultClick = function(query, url, title, position) {
+  window.trackResultClick = function (query, url, title, position) {
     const sessionId = getSessionId();
     trackResultClick(query, url, title, position, sessionId);
   };
 
-  window.trackTabChange = function(query, tabName, tabId) {
+  window.trackTabChange = function (query, tabName, tabId) {
     const sessionId = getSessionId();
     trackTabChange(query, tabName, tabId, sessionId);
   };

@@ -11,16 +11,16 @@
  * - Comprehensive analytics tracking
  * - IP resolution for accurate client tracking
  *
- * @author Victor Chimenti
- * @version 3.1.0
  * @license MIT
- * @lastModified 2025-04-28
+ * @author Victor Chimenti
+ * @version 3.1.1
+ * @lastModified 2025-04-29
  */
 
 class SearchManager {
   constructor() {
     this.config = {
-      proxyBaseUrl: "https://funnelback-proxy-dev.vercel.app/proxy",
+      proxyBaseUrl: "https://funnelback-proxy-one.vercel.app/proxy",
       enabledModules: ["tabs", "facets", "pagination", "spelling", "analytics"],
       observerConfig: {
         childList: true,

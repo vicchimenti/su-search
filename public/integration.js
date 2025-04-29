@@ -7,15 +7,15 @@
  *
  * @license MIT
  * @author Victor Chimenti
- * @version 2.1.0
- * @lastModified 2025-04-28
+ * @version 2.1.1
+ * @lastModified 2025-04-29
  */
 
 (function () {
   // Configuration for the frontend API
   const config = {
-    apiBaseUrl: "https://su-search-dev.vercel.app",
-    proxyBaseUrl: "https://funnelback-proxy-dev.vercel.app/proxy",
+    apiBaseUrl: "https://su-search.vercel.app",
+    proxyBaseUrl: "https://funnelback-proxy-one.vercel.app/proxy",
     collection: "seattleu~sp-search",
     profile: "_default",
     minQueryLength: 3,
