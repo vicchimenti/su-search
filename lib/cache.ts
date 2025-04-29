@@ -5,19 +5,27 @@
  * improving performance by caching API responses. Includes enhanced
  * support for tab content caching.
  *
+ * @license MIT
  * @author Victor Chimenti
- * @version 2.0.0
- * @lastModified 2025-04-16
+ * @version 2.1.0
+ * @lastModified 2025-04-29
  */
 
 import Redis from 'ioredis';
 
 // Initialize Redis client
-const redisClient = process.env.front_dev_REDIS_URL
-  ? new Redis(process.env.front_dev_REDIS_URL)
-  : process.env.REDIS_URL
+const redisClient = process.env.REDIS_URL
   ? new Redis(process.env.REDIS_URL)
-  : null;
+  : process.env.KV_URL
+    ? new Redis(process.env.KV_URL)
+    : null;
+
+// Log which Redis connection is being used
+if (redisClient) {
+  console.log(`Redis initialized using: ${process.env.REDIS_URL ? 'REDIS_URL' : 'KV_URL'}`);
+} else {
+  console.log('Redis not available, using memory cache fallback');
+}
 
 // Fallback in-memory cache for local development
 const memoryCache = new Map();
@@ -42,7 +50,7 @@ export async function getCachedData(key: string): Promise<any> {
       }
       return null;
     }
-    
+
     // Fall back to memory cache
     if (memoryCache.has(key)) {
       const { data, expiry } = memoryCache.get(key);
@@ -52,7 +60,7 @@ export async function getCachedData(key: string): Promise<any> {
       // Expired data
       memoryCache.delete(key);
     }
-    
+
     return null;
   } catch (error) {
     console.error('Cache error:', error);
@@ -70,19 +78,19 @@ export async function getCachedData(key: string): Promise<any> {
 export async function setCachedData(key: string, data: any, ttlSeconds: number = DEFAULT_TTL): Promise<boolean> {
   try {
     const serializedData = JSON.stringify(data);
-    
+
     // Try Redis first if available
     if (redisClient) {
       await redisClient.set(key, serializedData, 'EX', ttlSeconds);
       return true;
     }
-    
+
     // Fall back to memory cache
     memoryCache.set(key, {
       data,
       expiry: Date.now() + (ttlSeconds * 1000)
     });
-    
+
     return true;
   } catch (error) {
     console.error('Cache set error:', error);
@@ -111,7 +119,7 @@ export async function clearCachedData(key: string): Promise<boolean> {
       }
       return true;
     }
-    
+
     // Clear from memory cache
     if (key.includes('*')) {
       const pattern = new RegExp(key.replace('*', '.*'));
@@ -123,7 +131,7 @@ export async function clearCachedData(key: string): Promise<boolean> {
     } else {
       memoryCache.delete(key);
     }
-    
+
     return true;
   } catch (error) {
     console.error('Cache clear error:', error);
@@ -163,9 +171,9 @@ export function generateTabCacheKey(query: string, collection: string, profile: 
  * @returns Cached tab content or null if not found
  */
 export async function getCachedTabContent(
-  query: string, 
-  collection: string, 
-  profile: string, 
+  query: string,
+  collection: string,
+  profile: string,
   tabId: string
 ): Promise<any> {
   const cacheKey = generateTabCacheKey(query, collection, profile, tabId);
@@ -183,16 +191,16 @@ export async function getCachedTabContent(
  * @returns Whether the operation was successful
  */
 export async function setCachedTabContent(
-  query: string, 
-  collection: string, 
-  profile: string, 
-  tabId: string, 
+  query: string,
+  collection: string,
+  profile: string,
+  tabId: string,
   content: any,
   isPopular: boolean = false
 ): Promise<boolean> {
   const cacheKey = generateTabCacheKey(query, collection, profile, tabId);
   const ttl = isPopular ? POPULAR_TAB_TTL : TAB_CONTENT_TTL;
-  
+
   return setCachedData(cacheKey, content, ttl);
 }
 
@@ -228,14 +236,14 @@ export async function getCacheStats(): Promise<any> {
         searchKeys: Array.from(memoryCache.keys()).filter(k => k.startsWith('search:')).length
       };
     }
-    
+
     // For Redis
     const [keyCount, tabKeyCount, searchKeyCount] = await Promise.all([
       redisClient.dbsize(),
       redisClient.keys('tab:*').then(keys => keys.length),
       redisClient.keys('search:*').then(keys => keys.length)
     ]);
-    
+
     return {
       cacheType: 'redis',
       keys: keyCount,
