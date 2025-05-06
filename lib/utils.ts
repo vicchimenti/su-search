@@ -3,9 +3,10 @@
  * 
  * This module provides utility functions used throughout the application.
  *
+ * @license MIT
  * @author Victor Chimenti
- * @version 2.2.0
- * @lastModified 2025-04-16
+ * @version 2.3.0
+ * @lastModified 2025-05-06
  */
 
 /**

@@ -11,16 +11,16 @@
  * - Comprehensive analytics tracking
  * - IP resolution for accurate client tracking
  *
- * @license MIT
  * @author Victor Chimenti
- * @version 3.1.1
- * @lastModified 2025-04-29
+ * @version 3.1.2
+ * @license MIT
+ * @lastModified 2025-05-06
  */
 
 class SearchManager {
   constructor() {
     this.config = {
-      proxyBaseUrl: "https://funnelback-proxy-one.vercel.app/proxy",
+      proxyBaseUrl: "https://funnelback-proxy-dev.vercel.app/proxy",
       enabledModules: ["tabs", "facets", "pagination", "spelling", "analytics"],
       observerConfig: {
         childList: true,
@@ -36,7 +36,7 @@ class SearchManager {
         click: "/analytics/click",
         batch: "/analytics/clicks-batch",
         supplement: "/analytics/supplement",
-        session: "/analytics/session",
+        session: "/analytics/",
       },
     };
 
@@ -68,7 +68,7 @@ class SearchManager {
     };
 
     // Initialize if on search page
-    if (window.location.pathname.includes("search-test")) {
+    if (window.location.pathname.includes("search")) {
       this.initialize();
       this.isInitialized = true;
     }

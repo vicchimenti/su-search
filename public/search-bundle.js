@@ -4,16 +4,17 @@
  * This file provides the client-side functionality for integrating
  * the search system into the Seattle University CMS.
  *
+ * @license MIT
  * @author Victor Chimenti
- * @version 2.0.1
- * @lastModified 2025-04-29
+ * @version 2.1.0
+ * @lastModified 2025-05-06
  */
 
 (function () {
   // Configuration with defaults
   const config = window.seattleUConfig?.search || {
-    apiBaseUrl: 'https://su-search.vercel.app',
-    proxyBaseUrl: 'https://funnelback-proxy-one.vercel.app/proxy',
+    apiBaseUrl: 'https://frontend-search-api.vercel.app',
+    proxyBaseUrl: 'https://funnelback-proxy-dev.vercel.app/proxy',
     collection: 'seattleu~sp-search',
     profile: '_default'
   };
