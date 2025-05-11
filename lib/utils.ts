@@ -5,8 +5,8 @@
  *
  * @license MIT
  * @author Victor Chimenti
- * @version 2.3.0
- * @lastModified 2025-05-06
+ * @version 2.4.0
+ * @lastModified 2025-05-11
  */
 
 /**
@@ -143,7 +143,7 @@ export function isTabRequest(url: string): boolean {
     );
 
     // For debugging
-    if (process.env.NODE_ENV === 'development') {
+    if (process.env.NODE_ENV === 'production') {
       console.log(`[TAB DEBUG] URL check:`, {
         url: url.substring(0, 100),
         hasFormPartial,
@@ -327,7 +327,7 @@ export function parseTabRequestUrl(url: string): {
       urlObj = new URL(url);
     } catch (e) {
       // Try as relative URL with a base
-      urlObj = new URL(url, '/search-test/');
+      urlObj = new URL(url, '/search/');
     }
 
     // Extract search params
