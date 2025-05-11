@@ -916,7 +916,7 @@ const SessionService = {
         this.log("Fetching client IP from API", this.LOG_LEVELS.INFO);
 
         const response = await fetch(
-          "https://su-search-dev.vercel.app/api/client-info",
+          "https://su-search.vercel.app/api/client-info",
           { signal: fetchController.signal }
         );
 
@@ -983,7 +983,7 @@ const SessionService = {
         });
 
         const endpoint =
-          "https://funnelback-proxy-dev.vercel.app/proxy/analytics";
+          "https://funnelback-proxy-one.vercel.app/proxy/analytics";
         navigator.sendBeacon(endpoint, blob);
 
         this.log(`Logged event: ${eventType}`, this.LOG_LEVELS.DEBUG);
