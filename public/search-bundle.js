@@ -6,15 +6,15 @@
  *
  * @license MIT
  * @author Victor Chimenti
- * @version 2.1.1
- * @lastModified 2025-05-09
+ * @version 2.2.0
+ * @lastModified 2025-05-11
  */
 
 (function () {
   // Configuration with defaults
   const config = window.seattleUConfig?.search || {
-    apiBaseUrl: 'https://su-search-dev.vercel.app',
-    proxyBaseUrl: 'https://funnelback-proxy-dev.vercel.app/proxy',
+    apiBaseUrl: 'https://su-search.vercel.app',
+    proxyBaseUrl: 'https://funnelback-proxy-one.vercel.app/proxy',
     collection: 'seattleu~sp-search',
     profile: '_default'
   };
@@ -95,7 +95,7 @@
         if (!query) return;
 
         // Navigate to search page with query
-        window.location.href = `/search-test/?query=${encodeURIComponent(query)}`;
+        window.location.href = `/search/?query=${encodeURIComponent(query)}`;
       });
     }
 
@@ -251,7 +251,7 @@
         trackSuggestionClick(text, 'general', '', text, sessionId);
 
         // Redirect to search page
-        window.location.href = `/search-test/?query=${encodeURIComponent(text)}`;
+        window.location.href = `/search/?query=${encodeURIComponent(text)}`;
       });
     });
   }
