@@ -6,8 +6,8 @@
  * 
  * @license MIT
  * @author Victor Chimenti
- * @version 1.1.0
- * @lastUpdated 2025-05-10
+ * @version 1.2.0
+ * @lastUpdated 2025-05-11
  */
 
 // Import core manager
@@ -17,7 +17,7 @@ import searchManager from './modules/core-search-manager.js';
 document.addEventListener('DOMContentLoaded', () => {
   // Configure manager with site-specific settings
   const config = {
-    proxyBaseUrl: 'https://funnelback-proxy-dev.vercel.app/proxy',
+    proxyBaseUrl: 'https://funnelback-proxy-one.vercel.app/proxy',
     enabledModules: [
       'tabs',       // Tab navigation
       'facets',     // Faceted search
