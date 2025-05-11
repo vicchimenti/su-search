@@ -237,7 +237,7 @@ const SessionService = {
     const redirectFlag = sessionStorage.getItem(this.SESSION_REDIRECT_FLAG);
 
     // Check URL for search-related parameters
-    const isSearchPage = window.location.pathname.includes("search-test");
+    const isSearchPage = window.location.pathname.includes("search");
     const hasQueryParam = new URLSearchParams(window.location.search).has(
       "query"
     );
@@ -997,7 +997,7 @@ const SessionService = {
 // Initialize on page load with optimized handling for search redirects
 window.addEventListener("DOMContentLoaded", () => {
   // Check if this is a search results page
-  const isSearchPage = window.location.pathname.includes("search-test");
+  const isSearchPage = window.location.pathname.includes("search");
   const hasQueryParam = new URLSearchParams(window.location.search).has(
     "query"
   );
