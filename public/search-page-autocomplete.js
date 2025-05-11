@@ -8,8 +8,8 @@
  *
  * @license MIT
  * @author Victor Chimenti
- * @version 2.2.1
- * @lastModified 2025-05-07
+ * @version 2.3.0
+ * @lastModified 2025-05-11
  */
 
 // Create a module-level session handler that serves as the single source of truth within this file
@@ -353,7 +353,7 @@ function trackSuggestionClick(text, type, url, title) {
     // Get the API endpoint from global config or use default
     const apiBaseUrl =
       window.seattleUConfig?.search?.proxyBaseUrl ||
-      "https://funnelback-proxy-dev.vercel.app/proxy";
+      "https://funnelback-proxy-one.vercel.app/proxy";
     const endpoint = `${apiBaseUrl}/analytics/click`;
 
     // Use sendBeacon if available for non-blocking operation
@@ -387,7 +387,7 @@ async function fetchSuggestions(query, container, isResultsPage = true) {
     // Get API URL from global config or use default
     const apiBaseUrl =
       window.seattleUConfig?.search?.apiBaseUrl ||
-      "https://su-search-dev.vercel.app";
+      "https://su-search.vercel.app";
 
     // Prepare URL with parameters
     const params = new URLSearchParams({ query });
@@ -426,7 +426,7 @@ async function checkCacheForResults(query, collection, profile) {
     // Get API URL from global config or use default
     const apiBaseUrl =
       window.seattleUConfig?.search?.apiBaseUrl ||
-      "https://su-search-dev.vercel.app";
+      "https://su-search.vercel.app";
 
     // Prepare URL with parameters
     const params = new URLSearchParams({
@@ -516,7 +516,7 @@ async function performSearch(query, container) {
     // Get API URL from global config or use default
     const apiBaseUrl =
       window.seattleUConfig?.search?.apiBaseUrl ||
-      "https://su-search-dev.vercel.app";
+      "https://su-search.vercel.app";
     const collection =
       window.seattleUConfig?.search?.collection || "seattleu~sp-search";
     const profile = window.seattleUConfig?.search?.profile || "_default";
@@ -727,7 +727,7 @@ function trackResultClick(query, url, title, position) {
     // Get API endpoint from global config or use default
     const apiBaseUrl =
       window.seattleUConfig?.search?.proxyBaseUrl ||
-      "https://funnelback-proxy-dev.vercel.app/proxy";
+      "https://funnelback-proxy-one.vercel.app/proxy";
     const endpoint = `${apiBaseUrl}/analytics/click`;
 
     // Use sendBeacon if available for non-blocking operation
