@@ -8,8 +8,8 @@
  *
  * @license MIT
  * @author Victor Chimenti
- * @version 1.0.0
- * @lastModified 2025-05-07
+ * @version 1.1.0
+ * @lastModified 2025-05-11
  */
 
 import type { NextApiRequest, NextApiResponse } from 'next';
@@ -42,7 +42,7 @@ export default async function handler(
   res: NextApiResponse<PrefetchResponse>
 ) {
   // Set CORS headers for cross-origin requests
-  res.setHeader('Access-Control-Allow-Origin', '*');
+  res.setHeader('Access-Control-Allow-Origin', 'https://www.seattleu.edu');
   res.setHeader('Access-Control-Allow-Methods', 'GET, OPTIONS');
   res.setHeader('Access-Control-Allow-Headers', 'Content-Type, X-Prefetch-Request, X-Requested-With');
 
