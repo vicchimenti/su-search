@@ -12,15 +12,15 @@
  * - IP resolution for accurate client tracking
  *
  * @author Victor Chimenti
- * @version 3.2.1
+ * @version 3.3.0
  * @license MIT
- * @lastModified 2025-05-10
+ * @lastModified 2025-05-11
  * 
  */
 class SearchManager {
   constructor() {
     this.config = {
-      proxyBaseUrl: "https://funnelback-proxy-dev.vercel.app/proxy",
+      proxyBaseUrl: "https://funnelback-proxy-one.vercel.app/proxy",
       enabledModules: ["tabs", "facets", "pagination", "spelling", "analytics", "collapse"],
       observerConfig: {
         childList: true,
