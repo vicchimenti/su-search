@@ -7,8 +7,8 @@
  *
  * @license MIT
  * @author Victor Chimenti
- * @version 2.6.1
- * @lastModified 2025-05-07
+ * @version 2.7.0
+ * @lastModified 2025-05-11
  */
 
 (function () {
@@ -25,8 +25,8 @@
 
   // Configuration for the frontend API
   const config = {
-    apiBaseUrl: "https://su-search-dev.vercel.app",
-    proxyBaseUrl: "https://funnelback-proxy-dev.vercel.app/proxy",
+    apiBaseUrl: "https://su-search.vercel.app",
+    proxyBaseUrl: "https://funnelback-proxy-one.vercel.app/proxy",
     collection: "seattleu~sp-search",
     profile: "_default",
     minQueryLength: 3,
@@ -103,7 +103,7 @@
     log("DOM content loaded, initializing search integration", LOG_LEVELS.INFO);
 
     // Detect environment
-    const isResultsPage = window.location.pathname.includes("search-test");
+    const isResultsPage = window.location.pathname.includes("search");
     log(
       `Current page type: ${isResultsPage ? "search results" : "regular"}`,
       LOG_LEVELS.INFO
@@ -232,7 +232,7 @@
     // 3. Finally, prefetch the search results page template
     const searchPagePrefetch = document.createElement("link");
     searchPagePrefetch.rel = "prefetch";
-    searchPagePrefetch.href = "/search-test/";
+    searchPagePrefetch.href = "/search/";
     fragment.appendChild(searchPagePrefetch);
 
     // Append all links to the document head
@@ -335,8 +335,7 @@
         const prepared =
           window.SessionService.prepareForSearchRedirect(normalizedQuery);
         log(
-          `SessionService prepared for redirect: ${
-            prepared ? "success" : "failed"
+          `SessionService prepared for redirect: ${prepared ? "success" : "failed"
           }`,
           LOG_LEVELS.INFO
         );
@@ -348,7 +347,7 @@
       }
 
       // Navigate to search page with query
-      const redirectUrl = `/search-test/?query=${encodeURIComponent(
+      const redirectUrl = `/search/?query=${encodeURIComponent(
         normalizedQuery
       )}`;
       log(`Redirecting to: ${redirectUrl}`, LOG_LEVELS.INFO);
@@ -626,7 +625,7 @@
         trackSuggestionClick(text, "general", "", text);
 
         // Redirect to search page
-        window.location.href = `/search-test/?query=${encodeURIComponent(
+        window.location.href = `/search/?query=${encodeURIComponent(
           normalizedQuery
         )}`;
       });
@@ -1016,8 +1015,7 @@
         });
         const sent = navigator.sendBeacon(endpoint, blob);
         log(
-          `Suggestion click tracking sent via sendBeacon: ${
-            sent ? "success" : "failed"
+          `Suggestion click tracking sent via sendBeacon: ${sent ? "success" : "failed"
           }`,
           LOG_LEVELS.DEBUG
         );
@@ -1090,8 +1088,7 @@
         });
         const sent = navigator.sendBeacon(endpoint, blob);
         log(
-          `Tab change tracking sent via sendBeacon: ${
-            sent ? "success" : "failed"
+          `Tab change tracking sent via sendBeacon: ${sent ? "success" : "failed"
           }`,
           LOG_LEVELS.DEBUG
         );
@@ -1160,7 +1157,7 @@
       rect.top >= 0 &&
       rect.left >= 0 &&
       rect.bottom <=
-        (window.innerHeight || document.documentElement.clientHeight) &&
+      (window.innerHeight || document.documentElement.clientHeight) &&
       rect.right <= (window.innerWidth || document.documentElement.clientWidth);
     return isVisible;
   }
