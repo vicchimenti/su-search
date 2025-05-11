@@ -7,14 +7,14 @@
  *
  * @license MIT
  * @author Victor Chimenti
- * @version 2.2.0
- * @lastModified 2025-05-07
+ * @version 2.3.0
+ * @lastModified 2025-05-11
  */
 
 import axios, { AxiosInstance, AxiosRequestConfig, AxiosRequestHeaders } from 'axios';
 
 // Get backend API URL from environment variables, with fallback
-const BACKEND_API_URL = process.env.BACKEND_API_URL || 'https://funnelback-proxy-dev.vercel.app/proxy';
+const BACKEND_API_URL = process.env.BACKEND_API_URL || 'https://funnelback-proxy-one.vercel.app/proxy';
 
 // Define log levels
 export enum LogLevel {
