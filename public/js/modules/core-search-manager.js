@@ -12,16 +12,16 @@
  * - IP resolution for accurate client tracking
  *
  * @author Victor Chimenti
- * @version 3.1.2
+ * @version 3.2.1
  * @license MIT
- * @lastModified 2025-05-06
+ * @lastModified 2025-05-10
+ * 
  */
-
 class SearchManager {
   constructor() {
     this.config = {
       proxyBaseUrl: "https://funnelback-proxy-dev.vercel.app/proxy",
-      enabledModules: ["tabs", "facets", "pagination", "spelling", "analytics"],
+      enabledModules: ["tabs", "facets", "pagination", "spelling", "analytics", "collapse"],
       observerConfig: {
         childList: true,
         subtree: true,
@@ -556,7 +556,7 @@ class SearchManager {
     );
     if (resultsContainer) {
       resultsContainer.innerHTML = `
-        <div class="funnelback-search-container">
+        <div id="funnelback-search-container-response" class="funnelback-search-container">
           ${html || "No results found."}
         </div>
       `;

@@ -7,7 +7,7 @@
  *
  * @license MIT
  * @author Victor Chimenti
- * @version 2.6.0
+ * @version 2.6.1
  * @lastModified 2025-05-07
  */
 
@@ -335,7 +335,8 @@
         const prepared =
           window.SessionService.prepareForSearchRedirect(normalizedQuery);
         log(
-          `SessionService prepared for redirect: ${prepared ? "success" : "failed"
+          `SessionService prepared for redirect: ${
+            prepared ? "success" : "failed"
           }`,
           LOG_LEVELS.INFO
         );
@@ -660,6 +661,27 @@
         // Normalize the query
         const normalizedQuery = normalizeQuery(query);
 
+        // KEY ADDITION: Update core.originalQuery to ensure analytics work properly
+        // Only set if SearchManager exists and originalQuery is accessible
+        if (window.SearchManager && typeof window.SearchManager === "object") {
+          // First try to use setter method if it exists
+          if (typeof window.SearchManager.setOriginalQuery === "function") {
+            window.SearchManager.setOriginalQuery(normalizedQuery);
+            log(
+              "Updated SearchManager.originalQuery via setter",
+              LOG_LEVELS.DEBUG
+            );
+          }
+          // Otherwise set directly if property exists or can be created
+          else {
+            window.SearchManager.originalQuery = normalizedQuery;
+            log(
+              "Updated SearchManager.originalQuery directly",
+              LOG_LEVELS.DEBUG
+            );
+          }
+        }
+
         // Perform search
         performSearch(normalizedQuery, component.container);
 
@@ -828,7 +850,7 @@
 
       // Update results container
       container.innerHTML = `
-        <div class="funnelback-search-container">
+        <div id="funnelback-search-container-response" class="funnelback-search-container">
           ${html}
         </div>
       `;
@@ -994,7 +1016,8 @@
         });
         const sent = navigator.sendBeacon(endpoint, blob);
         log(
-          `Suggestion click tracking sent via sendBeacon: ${sent ? "success" : "failed"
+          `Suggestion click tracking sent via sendBeacon: ${
+            sent ? "success" : "failed"
           }`,
           LOG_LEVELS.DEBUG
         );
@@ -1067,7 +1090,8 @@
         });
         const sent = navigator.sendBeacon(endpoint, blob);
         log(
-          `Tab change tracking sent via sendBeacon: ${sent ? "success" : "failed"
+          `Tab change tracking sent via sendBeacon: ${
+            sent ? "success" : "failed"
           }`,
           LOG_LEVELS.DEBUG
         );
@@ -1136,7 +1160,7 @@
       rect.top >= 0 &&
       rect.left >= 0 &&
       rect.bottom <=
-      (window.innerHeight || document.documentElement.clientHeight) &&
+        (window.innerHeight || document.documentElement.clientHeight) &&
       rect.right <= (window.innerWidth || document.documentElement.clientWidth);
     return isVisible;
   }

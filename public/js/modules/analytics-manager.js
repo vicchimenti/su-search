@@ -179,7 +179,7 @@ class AnalyticsManager {
       // Determine action type (select or clear)
       const action =
         link.classList.contains("facet-group__clear") ||
-          link.classList.contains("facet-breadcrumb__link")
+        link.classList.contains("facet-breadcrumb__link")
           ? "clear"
           : "select";
 

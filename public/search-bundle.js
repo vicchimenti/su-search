@@ -6,14 +6,14 @@
  *
  * @license MIT
  * @author Victor Chimenti
- * @version 2.1.0
- * @lastModified 2025-05-06
+ * @version 2.1.1
+ * @lastModified 2025-05-09
  */
 
 (function () {
   // Configuration with defaults
   const config = window.seattleUConfig?.search || {
-    apiBaseUrl: 'https://frontend-search-api.vercel.app',
+    apiBaseUrl: 'https://su-search-dev.vercel.app',
     proxyBaseUrl: 'https://funnelback-proxy-dev.vercel.app/proxy',
     collection: 'seattleu~sp-search',
     profile: '_default'
@@ -393,7 +393,7 @@
 
       // Update results container
       container.innerHTML = `
-      <div class="funnelback-search-container">
+      <div id="funnelback-search-container-response" class="funnelback-search-container">
         ${html}
       </div>
     `;

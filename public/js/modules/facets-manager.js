@@ -8,13 +8,14 @@
  * - Handles facet selection and clearing
  * - Maintains facet breadcrumbs
  * - Updates search results based on facet selections
- * - Supports collapsible facet groups
  * - Integrates with search API via proxy
+ *
+ * Note: Collapsible functionality is now handled by the CollapseManager
  *
  * @license MIT
  * @author Victor Chimenti
- * @version 1.2.0
- * @lastModified 2025-04-28
+ * @version 1.5.0
+ * @lastModified 2025-05-10
  */
 
 class FacetsManager {
@@ -29,8 +30,7 @@ class FacetsManager {
     // Bind methods to maintain context
     this.handleFacetClick = this.handleFacetClick.bind(this);
     this.handleClearFacetClick = this.handleClearFacetClick.bind(this);
-    this.handleShowMoreClick = this.handleShowMoreClick.bind(this);
-    this.handleFacetToggle = this.handleFacetToggle.bind(this);
+    this.handleClick = this.handleClick.bind(this);
 
     this.initialize();
   }
@@ -44,38 +44,34 @@ class FacetsManager {
     }
 
     // Set up event delegation for facets
-    this.resultsContainer.addEventListener("click", (e) => {
-      // Handle facet selection
-      if (
-        e.target.closest(
-          ".facet-group__list a:not(.facet-group__clear):not(.facet-group__show-more)"
-        )
-      ) {
-        e.preventDefault();
-        this.handleFacetClick(e);
-      }
+    this.resultsContainer.addEventListener("click", this.handleClick);
+  }
 
-      // Handle clear facet
-      else if (
-        e.target.closest("a.facet-group__clear, .facet-breadcrumb__link")
-      ) {
-        e.preventDefault();
-        this.handleClearFacetClick(e);
-      }
+  /**
+   * Main click handler that delegates to appropriate functions.
+   * @param {Event} e - The click event
+   */
+  handleClick(e) {
+    // Handle facet selection
+    if (
+      e.target.closest(
+        ".facet-group__list a:not(.facet-group__clear):not(.facet-group__show-more)"
+      )
+    ) {
+      e.preventDefault();
+      this.handleFacetClick(e);
+    }
 
-      // Handle show more/less
-      else if (
-        e.target.closest('[data-component="facet-group-show-more-button"]')
-      ) {
-        e.preventDefault();
-        this.handleShowMoreClick(e);
-      }
+    // Handle clear facet
+    else if (
+      e.target.closest("a.facet-group__clear, .facet-breadcrumb__link")
+    ) {
+      e.preventDefault();
+      this.handleClearFacetClick(e);
+    }
 
-      // Handle facet toggle
-      else if (e.target.closest('[data-component="facet-group-control"]')) {
-        this.handleFacetToggle(e);
-      }
-    });
+    // Note: Collapse and show more functionality is now handled by CollapseManager
+    // We've removed these handlers to avoid conflicts
   }
 
   /**
@@ -96,12 +92,8 @@ class FacetsManager {
       const href = link.getAttribute("href");
       if (!href) return;
 
-      // Determine facet category and value for analytics
-      const facetCategory = this.getFacetCategory(link);
-      const facetValue =
-        link
-          .querySelector(".facet-group__list-link-text")
-          ?.textContent.trim() || link.textContent.trim();
+      // NOTE: We removed the direct analytics tracking to avoid conflicts
+      // Let the analytics-manager handle tracking through its event listeners
 
       // Fetch results using the search endpoint via core manager
       // This uses SessionService through the core manager
@@ -135,6 +127,9 @@ class FacetsManager {
       const href = link.getAttribute("href");
       if (!href) return;
 
+      // NOTE: We removed the direct analytics tracking to avoid conflicts
+      // Let the analytics-manager handle tracking through its event listeners
+
       // Fetch results using the search endpoint via core manager
       // This uses SessionService through the core manager
       const response = await this.core.fetchFromProxy(href, "search");
@@ -146,77 +141,6 @@ class FacetsManager {
     } finally {
       // Remove loading state
       this.resultsContainer.classList.remove("loading");
-    }
-  }
-
-  /**
-   * Handles clicks on show more buttons in facets.
-   * @param {Event} e - The click event
-   */
-  handleShowMoreClick(e) {
-    e.preventDefault();
-
-    const button = e.target.closest(
-      '[data-component="facet-group-show-more-button"]'
-    );
-    if (!button) return;
-
-    try {
-      // Find parent facet group
-      const facetGroup = button.closest(".facet-group__list");
-      if (!facetGroup) return;
-
-      // Get all hidden items
-      const hiddenItems = facetGroup.querySelectorAll(
-        ".facet-group__list-item--hidden"
-      );
-
-      // Remove hidden class from all items
-      hiddenItems.forEach((item) => {
-        item.classList.remove("facet-group__list-item--hidden");
-      });
-
-      // Hide the button
-      button.style.display = "none";
-    } catch (error) {
-      // Silent error handling
-    }
-  }
-
-  /**
-   * Handles facet group toggle for collapsible facets.
-   * @param {Event} e - The click event
-   */
-  handleFacetToggle(e) {
-    const toggleButton = e.target.closest(
-      '[data-component="facet-group-control"]'
-    );
-    if (!toggleButton) return;
-
-    try {
-      // Find content to toggle
-      const content = toggleButton.nextElementSibling;
-      if (!content) return;
-
-      // Toggle expanded state
-      const isExpanded = toggleButton.getAttribute("aria-expanded") === "true";
-      toggleButton.setAttribute("aria-expanded", (!isExpanded).toString());
-
-      // Toggle active class
-      toggleButton.classList.toggle("facet-group__title--open");
-
-      // Toggle content visibility
-      if (isExpanded) {
-        content.classList.remove("facet-group__list--open");
-        content.setAttribute("aria-hidden", "true");
-        content.style.display = "none";
-      } else {
-        content.classList.add("facet-group__list--open");
-        content.setAttribute("aria-hidden", "false");
-        content.style.display = "";
-      }
-    } catch (error) {
-      // Silent error handling
     }
   }
 
@@ -245,46 +169,8 @@ class FacetsManager {
   handleDomChanges(addedNodes) {
     if (!addedNodes || addedNodes.length === 0) return;
 
-    addedNodes.forEach((node) => {
-      if (node.nodeType === Node.ELEMENT_NODE) {
-        // Initialize show more buttons if any
-        const showMoreButtons = node.querySelectorAll(
-          '[data-component="facet-group-show-more-button"]'
-        );
-        showMoreButtons.forEach((button) => {
-          if (!button.hasAttribute("data-initialized")) {
-            button.setAttribute("data-initialized", "true");
-            // No need to add event listeners here as we're using event delegation
-          }
-        });
-
-        // Initialize facet toggles if any
-        const facetToggles = node.querySelectorAll(
-          '[data-component="facet-group-control"]'
-        );
-        facetToggles.forEach((toggle) => {
-          if (!toggle.hasAttribute("data-initialized")) {
-            toggle.setAttribute("data-initialized", "true");
-            // Set initial ARIA attributes if not present
-            if (!toggle.hasAttribute("aria-expanded")) {
-              const isOpen = toggle.classList.contains(
-                "facet-group__title--open"
-              );
-              toggle.setAttribute("aria-expanded", isOpen.toString());
-
-              // Also set content state
-              const content = toggle.nextElementSibling;
-              if (content) {
-                content.setAttribute("aria-hidden", (!isOpen).toString());
-                if (!isOpen) {
-                  content.style.display = "none";
-                }
-              }
-            }
-          }
-        });
-      }
-    });
+    // Note: We no longer initialize toggle buttons or show more buttons here
+    // CollapseManager now handles this functionality
   }
 
   /**
