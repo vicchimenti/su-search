@@ -7,7 +7,7 @@
  *
  * @license MIT
  * @author Victor Chimenti
- * @version 2.7.1
+ * @version 2.7.2
  * @lastModified 2025-05-12
  */
 
@@ -801,6 +801,7 @@
       // Prepare URL with parameters
       const params = new URLSearchParams({
         query,
+        form: 'partial',
         collection: config.collection,
         profile: config.profile,
       });
