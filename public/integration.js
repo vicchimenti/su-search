@@ -7,8 +7,8 @@
  *
  * @license MIT
  * @author Victor Chimenti
- * @version 2.7.0
- * @lastModified 2025-05-11
+ * @version 2.7.1
+ * @lastModified 2025-05-12
  */
 
 (function () {
@@ -805,6 +805,8 @@
         profile: config.profile,
       });
 
+      log(`Performing search with params: ${params}`);
+
       // Get session ID directly from SessionService if available
       if (window.SessionService) {
         const sessionId = window.SessionService.getSessionId();
@@ -853,6 +855,9 @@
           ${html}
         </div>
       `;
+
+      console.log('Search response received, length:', html.length, 'starts with:', html.substring(0, 100));
+
 
       // Attach click handlers for tracking
       attachResultClickHandlers(container, query);
@@ -1171,6 +1176,7 @@
    * @param {string|HTMLElement} containerId - Container ID or element for results
    */
   window.performSearch = function (query, containerId) {
+    console.log('Starting search with query:', query);
     const container =
       typeof containerId === "string"
         ? document.getElementById(containerId)
