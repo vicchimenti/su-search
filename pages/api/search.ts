@@ -6,8 +6,8 @@
  * and IP resolution for accurate client tracking.
  *
  * @author Victor Chimenti
- * @version 3.1.0
- * @lastModified 2025-05-07
+ * @version 3.2.1
+ * @lastModified 2025-09-29
  */
 
 import type { NextApiRequest, NextApiResponse } from 'next';
@@ -47,43 +47,6 @@ interface SearchParams {
   [key: string]: string | string[] | undefined;
 }
 
-/**
- * Add cache status headers to the response
- * This is non-intrusive and doesn't affect the response content
- * 
- * @param res - NextApiResponse object
- * @param status - Cache status (HIT or MISS)
- * @param type - Cache type (search or tab)
- * @param metadata - Additional metadata
- */
-function addCacheHeaders(
-  res: NextApiResponse,
-  status: 'HIT' | 'MISS',
-  type: 'search' | 'tab',
-  metadata: any = {}
-): void {
-  // Add standard cache headers
-  res.setHeader('X-Cache-Status', status);
-  res.setHeader('X-Cache-Type', type);
-
-  // Add additional metadata if available
-  if (metadata.tabId) {
-    res.setHeader('X-Cache-Tab-ID', metadata.tabId);
-  }
-
-  if (metadata.age) {
-    res.setHeader('X-Cache-Age', metadata.age.toString());
-  }
-
-  if (metadata.ttl) {
-    res.setHeader('X-Cache-TTL', metadata.ttl.toString());
-  }
-
-  if (process.env.NODE_ENV === 'development') {
-    console.log(`[SEARCH-API] Cache ${status} for ${type}${metadata.tabId ? ` (tab: ${metadata.tabId})` : ''}`);
-  }
-}
-
 export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse
@@ -91,7 +54,7 @@ export default async function handler(
   // Set CORS headers
   res.setHeader('Access-Control-Allow-Origin', 'https://www.seattleu.edu');
   res.setHeader('Access-Control-Allow-Methods', 'GET, OPTIONS');
-  res.setHeader('Access-Control-Allow-Headers', 'Content-Type, X-Cache-Only');
+  res.setHeader('Access-Control-Allow-Headers', 'Content-Type, X-Cache-Only, X-Requested-With');
 
   // Handle preflight requests
   if (req.method === 'OPTIONS') {
@@ -109,7 +72,14 @@ export default async function handler(
   const fullUrl = req.url || '';
   console.log(`[SEARCH-API] Received request: ${fullUrl}`);
 
+  console.log('[CACHE-DEBUG] Starting cache operations');
+  // Resolve client IP information
+  console.log(`[CACHE-DEBUG] Resolving client IP information`);
+  const clientInfo = await getClientInfo(req.headers);
+  console.log(`[CACHE-DEBUG] Resolved client IP: ${clientInfo.ip} (${clientInfo.source})`);
+
   const { query, collection, profile, form, sessionId } = req.query;
+  console.log('[CACHE-DEBUG] Query params:', { query, collection, profile, form });
 
   // Basic validation
   if (!query) {
@@ -194,16 +164,18 @@ export default async function handler(
       if (cachedTabContent) {
         console.log(`[SEARCH-API] Cache HIT for tab '${tabId}'`);
 
-        // Add cache status headers - non-intrusive enhancement
-        addCacheHeaders(res, 'HIT', 'tab', {
-          tabId,
-          popular: isPopularTab
-        });
-
         // Handle cache-check-only requests
         if (cacheCheckOnly) {
+          res.setHeader('X-Cache-Status', 'HIT');
+          res.setHeader('X-Cache-Type', 'tab');
+          if (tabId) res.setHeader('X-Cache-Tab-ID', tabId);
           return res.status(200).json({ cacheStatus: 'HIT', tabId });
         }
+
+        // Set headers immediately before sending response
+        res.setHeader('X-Cache-Status', 'HIT');
+        res.setHeader('X-Cache-Type', 'tab');
+        if (tabId) res.setHeader('X-Cache-Tab-ID', tabId);
 
         // Return cached tab content as-is to preserve the exact HTML structure
         return res.status(200).send(cachedTabContent);
@@ -211,14 +183,22 @@ export default async function handler(
 
       console.log(`[SEARCH-API] Cache MISS for tab '${tabId}'`);
 
-      // Add cache status headers - non-intrusive enhancement
-      addCacheHeaders(res, 'MISS', 'tab', { tabId });
-
       // Handle cache-check-only requests
       if (cacheCheckOnly) {
+        res.setHeader('X-Cache-Status', 'MISS');
+        res.setHeader('X-Cache-Type', 'tab');
+        if (tabId) res.setHeader('X-Cache-Tab-ID', tabId);
         return res.status(404).json({ cacheStatus: 'MISS', tabId });
       }
+
+      // Set miss headers (will be sent with final response)
+      res.setHeader('X-Cache-Status', 'MISS');
+      res.setHeader('X-Cache-Type', 'tab');
+      if (tabId) res.setHeader('X-Cache-Tab-ID', tabId);
+
     } else {
+
+      console.log('[CACHE-DEBUG] Starting cache check for query:', query);
       // For non-tab requests, use general search cache
       const cachedResult = await getCachedSearchResults(
         query as string,
@@ -226,16 +206,22 @@ export default async function handler(
         profile as string || '_default'
       );
 
+      console.log('[CACHE-DEBUG] Cache result:', cachedResult ? 'HIT' : 'MISS');
+
       if (cachedResult) {
         console.log(`[SEARCH-API] Cache HIT for search: ${query}`);
 
-        // Add cache status headers - non-intrusive enhancement
-        addCacheHeaders(res, 'HIT', 'search');
-
         // Handle cache-check-only requests
         if (cacheCheckOnly) {
+          // Set headers before responding
+          res.setHeader('X-Cache-Status', 'HIT');
+          res.setHeader('X-Cache-Type', 'search');
           return res.status(200).json({ cacheStatus: 'HIT' });
         }
+
+        // Set headers immediately before sending response
+        res.setHeader('X-Cache-Status', 'HIT');
+        res.setHeader('X-Cache-Type', 'search');
 
         // Return cached search results as-is to preserve the exact HTML structure
         return res.status(200).send(cachedResult);
@@ -243,13 +229,16 @@ export default async function handler(
 
       console.log(`[SEARCH-API] Cache MISS for search: ${query}`);
 
-      // Add cache status headers - non-intrusive enhancement
-      addCacheHeaders(res, 'MISS', 'search');
-
       // Handle cache-check-only requests
       if (cacheCheckOnly) {
+        res.setHeader('X-Cache-Status', 'MISS');
+        res.setHeader('X-Cache-Type', 'search');
         return res.status(404).json({ cacheStatus: 'MISS' });
       }
+
+      // Set miss headers (will be sent with final response)
+      res.setHeader('X-Cache-Status', 'MISS');
+      res.setHeader('X-Cache-Type', 'search');
     }
 
     // Cache miss - prepare parameters for backend API
@@ -315,6 +304,17 @@ export default async function handler(
     }
 
     // Return the result as-is to preserve the exact HTML structure
+    // Ensure cache headers are set if they weren't already
+    if (!res.getHeader('X-Cache-Status')) {
+      res.setHeader('X-Cache-Status', 'MISS');
+    }
+    if (!res.getHeader('X-Cache-Type')) {
+      res.setHeader('X-Cache-Type', tabRequestDetected ? 'tab' : 'search');
+    }
+    if (tabRequestDetected && tabId && !res.getHeader('X-Cache-Tab-ID')) {
+      res.setHeader('X-Cache-Tab-ID', tabId);
+    }
+
     res.status(200).send(result.data);
   } catch (error) {
     console.error('[SEARCH-API] Search API error:', error);
