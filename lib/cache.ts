@@ -6,9 +6,9 @@
  * support for tab content caching and tiered TTL for popular queries.
  *
  * @author Victor Chimenti
- * @version 3.0.1
+ * @version 3.1.1
  * @license MIT
- * @lastModified 2025-09-29
+ * @lastModified 2025-10-01
  */
 
 import Redis from 'ioredis';
@@ -44,6 +44,15 @@ const POPULAR_TAB_TTL = 20 * 3600; // 20 hours
 const SEARCH_DEFAULT_TTL = 12 * 3600; // 12 hours
 const SEARCH_POPULAR_TTL = 16 * 3600; // 16 hours
 const SEARCH_HIGH_VOLUME_TTL = 18 * 3600; // 18 hours
+
+export {
+  DEFAULT_TTL,
+  TAB_CONTENT_TTL,
+  POPULAR_TAB_TTL,
+  SEARCH_DEFAULT_TTL,
+  SEARCH_POPULAR_TTL,
+  SEARCH_HIGH_VOLUME_TTL
+};
 
 // Simple metrics tracking - doesn't affect existing cache behavior
 interface CacheMetrics {

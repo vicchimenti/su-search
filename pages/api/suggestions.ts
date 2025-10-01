@@ -6,13 +6,13 @@
  * preservation for accurate analytics and personalization.
  *
  * @author Victor Chimenti
- * @version 3.0.0
- * @lastModified 2025-04-28
+ * @version 3.1.1
+ * @lastModified 2025-10-01
  */
 
 import type { NextApiRequest, NextApiResponse } from 'next';
 import { createApiClient } from '../../lib/api-client';
-import { getCachedData, setCachedData } from '../../lib/cache';
+import { setCachedData, getCachedData, DEFAULT_TTL } from '../../lib/cache';
 import { getClientInfo, getClientIpHeaders } from '../../lib/ip-service';
 
 export default async function handler(
@@ -106,8 +106,8 @@ export default async function handler(
     }
 
     // Cache the result
-    await setCachedData(cacheKey, result, 60 * 5); // 5 minutes TTL
-    console.log(`[SUGGESTIONS-API] Cached suggestions for key: ${cacheKey}, TTL: 300s`);
+    await setCachedData(cacheKey, result, DEFAULT_TTL); // 12 hours TTL
+    console.log(`[SUGGESTIONS-API] Cached suggestions for key: ${cacheKey}, TTL: ${DEFAULT_TTL}s`);
 
     // Return the result
     res.status(200).json(result);
