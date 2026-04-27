@@ -6,9 +6,9 @@
  * support for tab content caching and tiered TTL for popular queries.
  *
  * @author Victor Chimenti
- * @version 3.1.1
+ * @version 3.2.0
  * @license MIT
- * @lastModified 2025-10-01
+ * @lastModified 2026-04-27
  */
 
 import Redis from 'ioredis';
@@ -28,10 +28,14 @@ let currentLogLevel = process.env.CACHE_LOG_LEVEL
   : DEFAULT_LOG_LEVEL;
 
 // Initialize Redis client
-const redisClient = process.env.KV_URL
-  ? new Redis(process.env.KV_URL)
-  : process.env.KV_URL_SU_SEARCH
-    ? new Redis(process.env.KV_URL_SU_SEARCH)
+// Updated 2026-04-27 to use su_search_prod_202604 prefixed env vars
+// from new Upstash database via Vercel Marketplace integration.
+// Replaces legacy KV_URL / KV_URL_SU_SEARCH which pointed at the
+// unrotatable Vercel-managed legacy database (select-marmot-22147).
+const redisClient = process.env.su_search_prod_202604_KV_URL
+  ? new Redis(process.env.su_search_prod_202604_KV_URL)
+  : process.env.su_search_prod_202604_REDIS_URL
+    ? new Redis(process.env.su_search_prod_202604_REDIS_URL)
     : null;
 
 // Fallback in-memory cache for local development
